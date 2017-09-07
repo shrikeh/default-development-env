@@ -34,7 +34,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     end
   end
 
-  config.vm.box = 'bento/ubuntu-16.04'
+  config.vm.box = 'bento/ubuntu-17.04'
 
   config.vm.define :shrikeh
 
@@ -93,10 +93,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.network :private_network, type: :dhcp
 
   # Set up port forwarding for using MySQL from the host
-  config.vm.network :forwarded_port,
-    guest:        3306,
-    host:         33609,
-    auto_correct: true
+  # config.vm.network :forwarded_port,
+  #   guest:        3306,
+  #   host:         33609,
+  #   auto_correct: true
 
   vmname              = 'shrikeh'
   config.cache.scope  = :box
@@ -111,28 +111,24 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     type: :nfs,
     create: true
 
-
-
   config.vm.synced_folder './.ssh-keys', '/root/.ssh',
     id:     'ssh',
     type:   :nfs,
     create: true
 
-  # If the user has VMWare locally, this will be faster than parallels
+    # Set up parallels if we can
+    config.vm.provider :parallels do |prl, override|
+      prl.name        = vmname
+      prl.memory      = 2048
+      prl.cpus        = 1
+    end
+
+  # Attempt VM ware if parallels is missing
   %w(vmware_workstation, vmware_fusion).each do |vmware_provider|
     config.vm.provider(vmware_provider) do |vmw, override|
-      override.vm.box = 'hashicorp/precise64'
     end
   end
 
-  # But also set up parallels if no VMWare present
-  config.vm.provider :parallels do |prl, override|
-    prl.name        = vmname
-    prl.memory      = 2048
-    prl.cpus        = 1
-  end
-
-  virtualenv_dir = '.venv'
   provision_ansible = 'provisioning/setup.sh'
   config.trigger.before :up do
     run "chmod +x #{provision_ansible}"
