@@ -129,7 +129,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     end
   end
 
-  provision_ansible = 'provisioning/setup.sh'
+  provision_ansible = './provisioning/ansible/ansible-setup.sh'
   config.trigger.before :up do
     run "chmod +x #{provision_ansible}"
     run "#{provision_ansible}"
