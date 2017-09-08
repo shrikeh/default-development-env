@@ -12,7 +12,7 @@ ruby_min_version = Gem::Version.new('2.2.1')
 abort "Ruby should be >= #{ruby_min_version.to_s}" unless Gem::Version.new(RUBY_VERSION) >= ruby_min_version
 
 # Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
-VAGRANTFILE_API_VERSION = "2"
+VAGRANTFILE_API_VERSION = "2" unless defined? VAGRANTFILE_API_VERSION
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   required_plugins = %w(
