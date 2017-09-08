@@ -130,14 +130,20 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   end
 
   provision_ansible = './provisioning/ansible/ansible-setup.sh'
-  config.trigger.before :up do
+  config.trigger.before [:up, :provision] do
     run "chmod +x #{provision_ansible}"
     run "#{provision_ansible}"
+    run "mkdir -p ./provisioning/ansible/galaxy"
   end
+
+  galaxy_path = 'provisioning/ansible/galaxy'
+
 
   config.vm.provision :ansible do |ansible|
     ansible.playbook          = 'provisioning/ansible/playbook.yml'
-    #ansible.galaxy_role_file  = 'ansible/galaxy.yml'
+    ansible.galaxy_role_file  = 'provisioning/ansible/galaxy.yml'
+    ansible.galaxy_command    = 'ansible-galaxy install --role-file=%{role_file} --roles-path=%{roles_path} --ignore-errors'
+    ansible.galaxy_roles_path = galaxy_path
     ansible.sudo              = true
     # ansible.extra_vars = {
     #   github_oauth:     my_conf['github_oauth']

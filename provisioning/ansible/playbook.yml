@@ -1,5 +1,6 @@
 ---
 - hosts: all
-  tasks:
-    - debug:
-        var: inventory_hostname
+  vars:
+    apt_gnupg_curl_pkg: gnupg2
+  roles:
+    - { role: angstwad.docker_ubuntu }
